@@ -4,11 +4,13 @@ import axios from 'axios'
 import {useNavigate} from 'react-router-dom'
 import {toast} from 'react-toastify'
 import "../../styles/AuthStyle.css"
+import { useAuth } from "../../context/auth";
 
 const Login = () => {
     
         const [email,setEmail] = useState('')
         const [password,setPassword] = useState('')
+        const[auth,setAuth]=useAuth()
         const navigate = useNavigate()
 
          // form function
@@ -18,6 +20,11 @@ const Login = () => {
             const res = await axios.post("http://localhost:8080/api/v1/auth/login",{email,password,});
            if(res&& res.data.success){
             toast.success(res.data && res.data.message)
+            setAuth({
+                ...auth,
+                user:res.data.user,
+                token:res.data.token,
+            })
             navigate("/");
            } else{
             toast.error(res.data.message)
@@ -28,9 +35,7 @@ const Login = () => {
             
         }
     };
-   
-    
-    return (
+   return (
 <Layout title='Register - Ecommerce App'>
         <div className="form-container">
             <h1>LOGIN FORM</h1>
@@ -44,7 +49,8 @@ const Login = () => {
    <button type="submit" className="btn btn-primary">LOGIN</button>
 </form>
  </div>
-        </Layout>    )
+        </Layout>  
+  )
 }
 
 export default Login
