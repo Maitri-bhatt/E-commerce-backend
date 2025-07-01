@@ -12,13 +12,16 @@ const Register = () => {
     const [password,setPassword] = useState('')
     const [phone,setPhone] = useState('')
     const [address,setAddress] = useState('')
+    const [answer,setAnswer] = useState('')
+
+
     const navigate = useNavigate()
 
     // form function
     const handleSubmit =async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:8080/api/v1/auth/register",{name,email,password,phone,address});
+            const res = await axios.post("http://localhost:8080/api/v1/auth/register",{name,email,password,phone,address,answer});
            if(res&& res.data.success){
             toast.success(res.data && res.data.message)
             navigate("/login");
@@ -34,8 +37,9 @@ const Register = () => {
     return (
         <Layout title='Register - Ecommerce App'>
         <div className="form-container">
-            <h1>REGISTER FORM</h1>
        <form onSubmit={handleSubmit}>
+     <h1>REGISTER FORM</h1>
+
   <div className="mb-3">
     <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="form-control" id="exampleInputEmail1" placeholder="Enter Your Name" required />
    </div>
@@ -51,6 +55,10 @@ const Register = () => {
    <div className="mb-3">
     <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} className="form-control" id="exampleInputEmail1" placeholder="Enter Your Address " required />
    </div>
+    <div className="mb-3">
+    <input type="text" value={answer} onChange={(e) => setAnswer(e.target.value)} className="form-control" id="exampleInputEmail1" placeholder="What is your favorite sports " required />
+   </div>
+
  <button type="submit" className="btn btn-primary">REGISTER</button>
 </form>
  </div>
