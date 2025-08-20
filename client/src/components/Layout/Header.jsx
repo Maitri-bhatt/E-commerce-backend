@@ -77,7 +77,7 @@ const Header = () => {
                         </NavLink>
                       </li>
                       <li>
-                        <NavLink
+                        <NavLink  
                           onClick={handleLogout}
                           to="/login"
                           className="dropdown-item"
