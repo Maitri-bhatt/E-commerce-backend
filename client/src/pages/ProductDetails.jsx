@@ -2,7 +2,6 @@ import Layout from "./../components/Layout/Layout";
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-import { pid } from "process";
 
 const ProductDetails = () => {
   const params = useParams();
