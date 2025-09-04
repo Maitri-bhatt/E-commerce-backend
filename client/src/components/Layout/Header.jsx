@@ -12,11 +12,12 @@ const Header = () => {
   const [auth, setAuth] = useAuth();
   const [cart] = useCart();
   const categories = useCategory();
+
   const handleLogout = () => {
     setAuth({
       ...auth,
       user: null,
-      token: "",
+      token: null,
     });
     localStorage.removeItem("auth");
     toast.success("Logout Successfully");
@@ -63,7 +64,7 @@ const Header = () => {
                     </Link>
                   </li>
                   {categories?.map((c) => (
-                    <li>
+                    <li key={c._id}>
                       <Link
                         className="dropdown-item"
                         to={`/category/${c.slug}`}

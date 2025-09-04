@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../components/Layout/Layout";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Button } from "antd";
 
 const CategoryProduct = () => {
   const params = useParams();
@@ -16,7 +17,7 @@ const CategoryProduct = () => {
   const getProductsByCat = async () => {
     try {
       const { data } = await axios.get(
-        `/api/v1/product/product-category/${params.slug}`
+        `http://localhost:8080/api/v1/product/product-category/${params.slug}`
       );
       setProducts(data?.products);
       setCategory(data?.category);
@@ -35,7 +36,7 @@ const CategoryProduct = () => {
               {products?.map((p) => (
                 <div className="card m-2" style={{ width: "18rem" }}>
                   <img
-                    src={`/api/v1/product/product-photo/${p._id}`}
+                    src={`http://localhost:8080/api/v1/product/product-photo/${p._id}`}
                     className="card-img-top"
                     alt={p.name}
                   />
@@ -47,12 +48,14 @@ const CategoryProduct = () => {
                     <p className="card-text"> $ {p.price}</p>
 
                     <Button
-                      class="btn btn-primary ms-1"
+                      className="btn btn-primary ms-1"
                       onClick={() => navigate(`/product/${p.slug}`)}
                     >
                       More Details
                     </Button>
-                    <Button class="btn btn-secondary ms-1">ADD TO CART</Button>
+                    <Button className="btn btn-secondary ms-1">
+                      ADD TO CART
+                    </Button>
                   </div>
                 </div>
               ))}

@@ -22,7 +22,9 @@ const HomePage = () => {
   // get all cat
   const getAllCategory = async () => {
     try {
-      const { data } = await axios.get("/api/v1/category/get-category");
+      const { data } = await axios.get(
+        "http://localhost:8080/api/v1/category/get-category"
+      );
       if (data?.success) {
         setCategories(data?.category);
       }
@@ -39,7 +41,9 @@ const HomePage = () => {
   const getAllProducts = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/v1/product/get-list/${page}`);
+      const { data } = await axios.get(
+        `http://localhost:8080/api/v1/product/product-list/${page}`
+      );
       setLoading(false);
       setProducts(data.products);
     } catch (error) {
@@ -51,7 +55,9 @@ const HomePage = () => {
   //   getTotal Count
   const getTotal = async () => {
     try {
-      const { data } = await axios.get("/api/v1/product/product-count");
+      const { data } = await axios.get(
+        "http://localhost:8080/api/v1/product/product-count"
+      );
       setTotal(data?.total);
     } catch (error) {
       console.log(error);
@@ -66,7 +72,9 @@ const HomePage = () => {
   const loadmore = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.get(`/api/v1/product/product-list/${page}`);
+      const { data } = await axios.get(
+        `http://localhost:8080/api/v1/product/product-list/${page}`
+      );
       setLoading(false);
       setProducts([...products, ...data?.products]);
     } catch (error) {
@@ -97,10 +105,13 @@ const HomePage = () => {
   //   get filtered product
   const filterProduct = async () => {
     try {
-      const { data } = await axios.post("/api/v1/product/product-filters", {
-        checked,
-        radio,
-      });
+      const { data } = await axios.post(
+        "http://localhost:8080/api/v1/product/product-filters",
+        {
+          checked,
+          radio,
+        }
+      );
       setProducts(data?.products);
     } catch (error) {
       console.log(error);
@@ -134,7 +145,10 @@ const HomePage = () => {
             </Radio.Group>
           </div>
           <div className="d-flex flex-column">
-            <button className="btn btn-danger" onClick={() => window.reload()}>
+            <button
+              className="btn btn-danger"
+              onClick={() => location.reload()}
+            >
               RESET FILTERS
             </button>
           </div>
@@ -143,9 +157,9 @@ const HomePage = () => {
           <h1 className="text-center">All Products</h1>
           <div className="d-flex flex-wrap">
             {products?.map((p) => (
-              <div className="card m-2" style={{ width: "18rem" }}>
+              <div key={p._id} className="card m-2" style={{ width: "18rem" }}>
                 <img
-                  src={`/api/v1/product/product-photo/${p._id}`}
+                  src={`http://localhost:8080/api/v1/product/product-photo/${p._id}`}
                   className="card-img-top"
                   alt={p.name}
                 />
@@ -154,22 +168,23 @@ const HomePage = () => {
                   <p className="card-text">
                     {p.description.substring(0, 30)}...
                   </p>
-                  <p className="card-text"> $ {p.price}</p>
+                  <p className="card-text"> Rs. {p.price}</p>
 
                   <Button
-                    class="btn btn-primary ms-1"
+                    className="btn btn-secondary ms-1"
                     onClick={() => navigate(`/product/${p.slug}`)}
                   >
                     More Details
                   </Button>
                   <Button
-                    class="btn btn-secondary ms-1"
+                    className="btn btn-primary ms-1"
                     onClick={() => {
-                      setCart([...cart, p]);
-                      localStorage.setItem(
-                        "cart",
-                        JSON.stringify([...cart, p])
-                      );
+                      console.log(p._id);
+                      setCart(p._id);
+                      // localStorage.setItem(
+                      //   "cart",
+                      //   JSON.stringify([...cart, p])
+                      // );
                       toast.success("Item Added to cart");
                     }}
                   >

@@ -1,3 +1,4 @@
+import { Schema } from "mongoose";
 import { comparePassword, hashPassword } from "../helpers/authHelper.js";
 import userModel from "../models/userModel.js";
 import JWT from "jsonwebtoken";
@@ -50,6 +51,7 @@ export const registerController = async (req, res) => {
       password: hashedPassword,
       question,
       answer,
+      cart: [],
     }).save();
 
     res.status(201).send({
@@ -95,7 +97,7 @@ export const loginController = async (req, res) => {
       });
     }
     // token
-    const token = await JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+    const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
     res.status(200).send({
@@ -107,6 +109,7 @@ export const loginController = async (req, res) => {
         phone: user.phone,
         address: user.address,
         role: user.role,
+        cart: user.cart,
       },
       token,
     });
@@ -199,6 +202,100 @@ export const updateProfileController = async (req, res) => {
       success: false,
       message: "Error While Update profile",
       error,
+    });
+  }
+};
+
+export const addToCart = async (req, res) => {
+  const user = await userModel.findById(req.user._id);
+  const product_id = req.body["product_id"];
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "You are unauthorized",
+    });
+  }
+
+  const productInCart = user.cart.filter(
+    (c) => c.productID.toString() === product_id
+  );
+
+  let updatedCart;
+
+  if (productInCart.length === 0) {
+    updatedCart = { productID: req.body["product_id"], quantity: 1 };
+    user.cart.push(updatedCart);
+  } else {
+    const cart = productInCart[0];
+    cart.quantity += 1;
+    updatedCart = cart;
+    await userModel.findOneAndUpdate({ userID: user._id }, { cart: cart });
+  }
+  await user.save();
+
+  res.json({
+    success: true,
+    message: "Added to cart",
+    payload: {
+      cart: updatedCart,
+    },
+  });
+};
+
+// get user cart
+export const getUserCart = async (req, res) => {
+  try {
+    const user = await userModel.findById(req.user._id);
+
+    return res.json({
+      status: true,
+      cart: user.cart,
+    });
+  } catch (e) {
+    res.status(500).json({
+      success: false,
+      message: e,
+    });
+  }
+};
+
+export const removeItemFromCart = async (req, res) => {
+  const cartID = req.params["cart_id"];
+  try {
+    const user = await userModel.findById(req.user._id);
+
+    const [cart] = user.cart.filter((c) => c._id.toString() === cartID);
+    if (!cart) {
+      res.status(404).json({
+        status: false,
+        message: "Cart not found",
+      });
+    }
+
+    if (cart.quantity == 1) {
+      await userModel.findOneAndUpdate(
+        { _id: user._id },
+        {
+          cart: user.cart.filter((c) => c._id.toString() !== cartID),
+        }
+      );
+      res.send({ status: true });
+    } else {
+      // const updatedCart = cart;
+      // const quantity = cart.quantity;
+      const result = await userModel.updateOne(
+        { _id: user._id, "cart._id": cart._id },
+        { $set: { "cart.$.quantity": --cart.quantity } }
+      );
+
+      res.send({ status: true, cart: cart });
+    }
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({
+      success: false,
+      message: e,
     });
   }
 };

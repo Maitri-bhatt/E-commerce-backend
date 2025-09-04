@@ -312,3 +312,25 @@ export const productCategoryController = async (req, res) => {
     });
   }
 };
+
+export const getProductByID = async (req, res) => {
+  const productID = req.params["id"];
+  try {
+    const product = await productModel.findById(productID).select("-photo");
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+      });
+    }
+
+    res.json({ success: true, product });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      message: "something went wrong",
+    });
+  }
+};

@@ -13,6 +13,7 @@ import {
   relatedProductController,
   searchProductController,
   updateProductController,
+  getProductByID,
 } from "../controllers/productController.js";
 import formidable from "express-formidable";
 
@@ -41,6 +42,8 @@ router.get("/get-product", getProductController);
 
 // single product
 router.get("/get-product/:slug", getSingleProductController);
+
+router.get("/get-product-by-id/:id", getProductByID);
 
 // get photo
 router.get("/product-photo/:pid", productPhotoController);

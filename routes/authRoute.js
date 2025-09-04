@@ -5,6 +5,9 @@ import {
   testController,
   forgotPasswordController,
   updateProfileController,
+  addToCart,
+  getUserCart,
+  removeItemFromCart,
 } from "../controllers/authController.js";
 import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -36,4 +39,9 @@ router.post("/admin-auth", requireSignIn, isAdmin, (req, res) => {
 // update profile
 router.put("/profile", requireSignIn, updateProfileController);
 
+router.post("/add-to-cart", requireSignIn, addToCart);
+
+router.get("/cart", requireSignIn, getUserCart);
+
+router.delete("/cart/:cart_id", requireSignIn, removeItemFromCart);
 export default router;

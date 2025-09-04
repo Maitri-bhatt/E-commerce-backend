@@ -1,41 +1,19 @@
-import React from "react";
 import Layout from "../components/Layout/Layout";
 import { useCart } from "../context/cart";
 import { useAuth } from "../context/auth";
 import { useNavigate } from "react-router-dom";
+import { Spin } from "antd";
+import { useState, useEffect } from "react";
+import CartCard from "../components/CartCard";
 
 const CartPage = () => {
-  const [auth, setAuth] = useAuth();
-  const [cart, setCart] = useCart();
+  const [auth] = useAuth();
+  const [cart, , deleteCart] = useCart();
+  const [total, setTotal] = useState(0);
+
   const navigate = useNavigate();
 
-  //    total price
-  const totalPrice = () => {
-    try {
-      let total = 0;
-      cart?.map((item) => {
-        total = total = item.price;
-      });
-      return total.toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //   delete item
-  const removeCartItem = (pid) => {
-    try {
-      let myCart = [...cart];
-      let index = myCart.findIndex((item) => item._id === pid);
-      myCart.splice(index, 1);
-      setCart(myCart);
-      localStorage.setItem("cart", JSON.stringify(myCart));
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // if (loading) return <Spin />;
   return (
     <Layout>
       <div className="container">
@@ -56,37 +34,18 @@ const CartPage = () => {
         <div className="row">
           <div className="col-md-8">
             <div className="row">
-              {cart?.map((p) => (
-                <div className="row mb-2 p-3 card flex-row">
-                  <div className="col-md-4">
-                    <img
-                      src={`/api/v1/product/product-photo/${p._id}`}
-                      className="card-img-top"
-                      alt={p.name}
-                      width="100px"
-                      height={"100px"}
-                    />
-                  </div>
-                  <div className="col-md-8">
-                    <p>{p.name}</p>
-                    <p>{p.description.substring(0, 30)}</p>
-                    <p>Price : {p.price}</p>
-                    <button
-                      className="btn btn-danger"
-                      onClick={() => removeCartItem(p._id)}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
+              {cart.map((c) => (
+                <CartCard
+                  productID={c.productID}
+                  quantity={c.quantity}
+                  key={c._id}
+                  cartID={c._id}
+                  onRemove={deleteCart}
+                />
               ))}
             </div>
           </div>
           <div className="col-md-4 text-center">
-            <h2>Cart Summary</h2>
-            <p>Total | CheckOut | Payment</p>
-            <hr />
-            <h4>Total : {totalPrice()}</h4>
             {auth?.user?.address ? (
               <>
                 <div className="mb-3">
